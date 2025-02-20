@@ -1,41 +1,44 @@
 import React from 'react';
 
-const Welcome = () => {
+const Terms = () => {
   const styles = {
     container: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      height: 'calc(100vh - 120px)',
-      textAlign: 'center',
+      minHeight: 'calc(100vh - 120px)',
       padding: '2rem',
-      margin: '1rem',
+      backgroundColor: '#f8fafc',
+    },
+    content: {
       maxWidth: '800px',
       width: '100%',
+      textAlign: 'center',
     },
-    heading: {
+    title: {
       fontSize: '2.5rem',
       marginBottom: '1.5rem',
       color: '#1a1a1a',
       fontWeight: '600',
     },
-    paragraph: {
+    text: {
       fontSize: '1.1rem',
-      maxWidth: '600px',
       lineHeight: '1.6',
       color: '#64748b',
-    },
+      marginBottom: '1rem',
+    }
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Welcome to HealthCareApp</h1>
-      <p style={styles.paragraph}>
-        Your health is our priority. Explore our services and get the best healthcare solutions tailored for you.
-      </p>
+      <div style={styles.content}>
+        <h1 style={styles.title}>Terms of Service</h1>
+        <p style={styles.text}>This is a dummy Terms of Service page.</p>
+        <p style={styles.text}>Please add your actual terms of service content here.</p>
+      </div>
     </div>
   );
 };
 
-export default Welcome;
+export default Terms;

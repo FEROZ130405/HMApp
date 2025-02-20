@@ -10,6 +10,7 @@ const Home = () => {
       justifyContent: 'center',
       minHeight: '100vh', // Ensures content fills viewport
       padding: '0 1rem', // Added padding to avoid content touching screen edges
+      backgroundColor: '#f8fafc', // Match login/signup background
       overflowX: 'hidden',
     },
   };
