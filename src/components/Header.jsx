@@ -45,12 +45,13 @@ const Header = () => {
       flexDirection: 'column',
       position: 'absolute',
       top: '50px',
-      left: '10px', // Align left near the hamburger
+      left: '10px',
       backgroundColor: '#444',
       padding: '0.5rem',
-      width: '150px', // Smaller width for a refined look
+      width: '150px',
       borderRadius: '5px',
       boxShadow: '0px 2px 5px rgba(0,0,0,0.3)',
+      zIndex: 2000, // Ensure the hamburger menu appears on top
     },
     link: {
       color: 'white',
@@ -65,41 +66,47 @@ const Header = () => {
     },
     authLinks: {
       display: 'flex',
-      gap: '1rem',
+      gap: '0.5rem', // Reduced gap for mobile UI
+    },
+    content: {
+      paddingTop: '60px', // Adjust based on header height
     },
   };
 
   return (
-    <header style={styles.navbar}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {isMobile && (
-          <div style={styles.hamburger} onClick={toggleMobileMenu}>
-            <FaBars style={{ color: 'white', fontSize: '1.5rem' }} />
-          </div>
-        )}
-        <div style={styles.navbarBrand}>HealthCareApp</div>
-      </div>
+    <>
+      <header style={styles.navbar}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {isMobile && (
+            <div style={styles.hamburger} onClick={toggleMobileMenu}>
+              <FaBars style={{ color: 'white', fontSize: '1.5rem' }} />
+            </div>
+          )}
+          <div style={styles.navbarBrand}>HealthCareApp</div>
+        </div>
 
-      {!isMobile ? (
-        <nav style={styles.navbarLinks}>
-          <a href="/" style={styles.link}>Home</a>
-          <a href="/signup" style={styles.link}>Signup</a>
-          <a href="/login" style={styles.link}>Login</a>
-        </nav>
-      ) : (
-        <>
-          <nav style={styles.authLinks}>
+        {!isMobile ? (
+          <nav style={styles.navbarLinks}>
+            <a href="/" style={styles.link}>Home</a>
             <a href="/signup" style={styles.link}>Signup</a>
             <a href="/login" style={styles.link}>Login</a>
           </nav>
-          {isMobileMenuOpen && (
-            <nav style={styles.navbarLinksMobile}>
-              <a href="/" style={styles.link}>Home</a>
+        ) : (
+          <>
+            <nav style={styles.authLinks}>
+              <a href="/signup" style={styles.link}>Signup</a>
+              <a href="/login" style={styles.link}>Login</a>
             </nav>
-          )}
-        </>
-      )}
-    </header>
+            {isMobileMenuOpen && (
+              <nav style={styles.navbarLinksMobile}>
+                <a href="/" style={styles.link}>Home</a>
+              </nav>
+            )}
+          </>
+        )}
+      </header>
+      <div style={styles.content}></div>
+    </>
   );
 };
 

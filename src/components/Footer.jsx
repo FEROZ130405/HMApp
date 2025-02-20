@@ -12,10 +12,10 @@ const Footer = () => {
       alignItems: 'center',
       flexWrap: 'wrap',
       textAlign: 'center',
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
       width: '100%',
+      height: 'auto',
+      marginTop: 'auto',
+      overflow: 'hidden',
     },
     container: {
       display: 'flex',
@@ -24,7 +24,7 @@ const Footer = () => {
       maxWidth: '1200px',
       width: '100%',
       margin: '0 auto',
-      padding: '0 1rem', // Ensures gap on left and right sides
+      padding: '0 1rem',
     },
     column: {
       flex: '1',
@@ -35,7 +35,7 @@ const Footer = () => {
     aboutText: {
       margin: '5px 0',
       lineHeight: '1.4',
-      maxWidth: '250px', // Ensures text does not stretch too far
+      maxWidth: '250px',
       textAlign: 'left',
       wordWrap: 'break-word',
     },
@@ -63,58 +63,64 @@ const Footer = () => {
       container: {
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '1rem', // Adds padding on small screens
+        padding: '1rem',
       },
       column: {
         minWidth: '100%',
-        textAlign: 'center', // Centers text in mobile
+        textAlign: 'center',
       },
       aboutText: {
-        maxWidth: '90%', // Ensures text doesn't stretch too far on mobile
-        margin: '0 auto', // Centers the paragraph properly
+        maxWidth: '90%',
+        margin: '0 auto',
       },
       socialIcons: {
-        justifyContent: 'center', // Centers icons in mobile
+        justifyContent: 'center',
       },
+    },
+    content: {
+      paddingBottom: '60px', // Adjust based on footer height
     },
   };
 
   return (
-    <footer style={styles.footer}>
-      <div style={styles.container}>
-        <div style={styles.column}>
-          <h4>About Us</h4>
-          <p style={styles.aboutText}>
-            We provide healthcare solutions to make your life better and ensure accessibility for all.
-          </p>
-        </div>
+    <>
+      <div style={styles.content}></div>
+      <footer style={styles.footer}>
+        <div style={styles.container}>
+          <div style={styles.column}>
+            <h4>About Us</h4>
+            <p style={styles.aboutText}>
+              We provide healthcare solutions to make your life better and ensure accessibility for all.
+            </p>
+          </div>
 
-        <div style={styles.column}>
-          <h4>Quick Links</h4>
-          <nav style={styles.links}>
-            <a href="/home" style={styles.link}>Home</a>
-            <a href="/services" style={styles.link}>Services</a>
-            <a href="/contact" style={styles.link}>Contact</a>
-          </nav>
-        </div>
+          <div style={styles.column}>
+            <h4>Quick Links</h4>
+            <nav style={styles.links}>
+              <a href="/home" style={styles.link}>Home</a>
+              <a href="/services" style={styles.link}>Services</a>
+              <a href="/contact" style={styles.link}>Contact</a>
+            </nav>
+          </div>
 
-        <div style={styles.column}>
-          <h4>Contact Us</h4>
-          <p style={{ margin: '5px 0', lineHeight: '1.4' }}>Email: support@healthcare.com</p>
-          <p style={{ margin: '5px 0', lineHeight: '1.4' }}>Phone: +123-456-7890</p>
-        </div>
+          <div style={styles.column}>
+            <h4>Contact Us</h4>
+            <p style={{ margin: '5px 0', lineHeight: '1.4' }}>Email: support@healthcare.com</p>
+            <p style={{ margin: '5px 0', lineHeight: '1.4' }}>Phone: +123-456-7890</p>
+          </div>
 
-        <div style={styles.column}>
-          <h4>Follow Us</h4>
-          <div style={styles.socialIcons}>
-            <a href="#" style={styles.icon}><FaFacebook /></a>
-            <a href="#" style={styles.icon}><FaTwitter /></a>
-            <a href="#" style={styles.icon}><FaInstagram /></a>
-            <a href="#" style={styles.icon}><FaLinkedin /></a>
+          <div style={styles.column}>
+            <h4>Follow Us</h4>
+            <div style={styles.socialIcons}>
+              <a href="#" style={styles.icon}><FaFacebook /></a>
+              <a href="#" style={styles.icon}><FaTwitter /></a>
+              <a href="#" style={styles.icon}><FaInstagram /></a>
+              <a href="#" style={styles.icon}><FaLinkedin /></a>
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 

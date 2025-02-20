@@ -7,17 +7,19 @@ const Welcome = () => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      height: '100vh',
+      height: 'calc(100vh - 120px)', // Adjusted to properly center content
       textAlign: 'center',
-      padding: '2rem',
+      padding: '1rem',
+      marginTop: '0', // Removed unnecessary margin
     },
     heading: {
-      fontSize: '2rem',
-      marginBottom: '1rem',
+      fontSize: '2.5rem',
+      marginBottom: '0.8rem',
     },
     paragraph: {
       fontSize: '1rem',
       maxWidth: '600px',
+      lineHeight: '1.5',
     },
   };
 

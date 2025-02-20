@@ -5,14 +5,25 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 
 function App() {
+  const styles = {
+    app: {
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      overflowX: 'hidden',
+    },
+  };
+
   return (
     <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* Other routes can go here */}
-      </Routes>
-      <Footer />
+      <div style={styles.app}>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* Other routes can go here */}
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   );
 }
