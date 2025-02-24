@@ -8,10 +8,9 @@ const Signup = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    phone: '',
     age: '',
     gender: '',
-    contact: '',
     address: ''
   });
   const [error, setError] = useState('');
@@ -79,11 +78,6 @@ const Signup = () => {
     e.preventDefault();
     setError('');
     
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
@@ -95,9 +89,9 @@ const Signup = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        age: parseInt(formData.age),
+        phone: formData.phone,
+        age: formData.age ? parseInt(formData.age) : undefined,
         gender: formData.gender,
-        contact: formData.contact,
         address: formData.address
       });
 
@@ -155,12 +149,12 @@ const Signup = () => {
             />
           </div>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Confirm Password</label>
+            <label style={styles.label}>Phone Number</label>
             <input
-              type="password"
+              type="tel"
               style={styles.input}
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
               required
             />
           </div>
@@ -172,6 +166,8 @@ const Signup = () => {
               value={formData.age}
               onChange={(e) => setFormData({...formData, age: e.target.value})}
               required
+              min="0"
+              max="120"
             />
           </div>
 
@@ -188,17 +184,6 @@ const Signup = () => {
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Contact Number</label>
-            <input
-              type="tel"
-              style={styles.input}
-              value={formData.contact}
-              onChange={(e) => setFormData({...formData, contact: e.target.value})}
-              required
-            />
           </div>
 
           <div style={styles.formGroup}>

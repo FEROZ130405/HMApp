@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [step, setStep] = useState(1); // 1: email, 2: OTP, 3: new password
   const [error, setError] = useState('');
-  const [isSent, setIsSent] = useState(false);
+  const navigate = useNavigate();
 
   const styles = {
     container: {
@@ -17,7 +19,7 @@ const ForgotPassword = () => {
       padding: '1rem',
       backgroundColor: '#f8fafc',
     },
-    form: {
+    formContainer: {
       backgroundColor: '#ffffff',
       padding: '2rem',
       borderRadius: '8px',
@@ -46,10 +48,6 @@ const ForgotPassword = () => {
       borderRadius: '4px',
       cursor: 'pointer',
     },
-    message: {
-      color: '#10b981',
-      marginTop: '1rem',
-    },
     error: {
       color: '#ef4444',
       marginTop: '1rem',
@@ -62,44 +60,109 @@ const ForgotPassword = () => {
     },
   };
 
-  const handleSubmit = async (e) => {
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      console.log('Sending forgot password request...');
+      const response = await api.post('/api/auth/forgot-password', { email });
+      console.log('Response:', response.data);
+      setStep(2);
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      setError(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to send OTP. Please try again.'
+      );
+    }
+  };
+
+  const handleOTPVerify = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/auth/forgot-password', { email });
-      setIsSent(true);
-      setMessage('Password reset instructions have been sent to your email.');
+      await api.post('/api/auth/verify-otp', { email, otp });
+      setStep(3);
       setError('');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset instructions');
-      setMessage('');
+    } catch (error) {
+      setError(error.response?.data?.message || 'Invalid OTP');
+    }
+  };
+
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/api/auth/reset-password', {
+        email,
+        otp,
+        newPassword
+      });
+      console.log('Password reset response:', response.data);
+      alert(response.data.message);
+      navigate('/login');
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setError(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to reset password. Please try again.'
+      );
     }
   };
 
   return (
     <div style={styles.container}>
-      <div style={styles.form}>
-        <h2 style={styles.title}>Reset Password</h2>
-        {!isSent ? (
-          <form onSubmit={handleSubmit}>
+      <div style={styles.formContainer}>
+        <h1 style={styles.title}>Password Reset</h1>
+        {error && <div style={styles.error}>{error}</div>}
+
+        {step === 1 && (
+          <form onSubmit={handleEmailSubmit}>
             <input
               type="email"
               placeholder="Enter your email"
-              style={styles.input}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              style={styles.input}
             />
             <button type="submit" style={styles.button}>
-              Send Reset Instructions
+              Send OTP
             </button>
           </form>
-        ) : (
-          <p style={styles.message}>{message}</p>
         )}
-        {error && <p style={styles.error}>{error}</p>}
-        <Link to="/login" style={styles.link}>
-          Back to Login
-        </Link>
+
+        {step === 2 && (
+          <form onSubmit={handleOTPVerify}>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+              style={styles.input}
+            />
+            <button type="submit" style={styles.button}>
+              Verify OTP
+            </button>
+          </form>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handlePasswordReset}>
+            <input
+              type="password"
+              placeholder="Enter new password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              style={styles.input}
+            />
+            <button type="submit" style={styles.button}>
+              Reset Password
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

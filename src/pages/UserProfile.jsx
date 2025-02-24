@@ -3,12 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 const UserProfile = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
     phone: '',
-    address: '',
+    age: '',
+    gender: '',
+    address: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isMobile] = useState(window.innerWidth <= 768);
@@ -74,46 +76,27 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get('/api/users/profile');
-        const userData = response.data;
-        console.log('Fetched user data:', userData); // Debug log
-        setProfile({
-          name: userData.name || '',
-          email: userData.email || '',
-          phone: userData.contact || userData.phone || '', // Try contact first, then phone
-          address: userData.address || '',
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    // Fetch profile when component mounts or when user changes
     if (user) {
-      fetchProfile();
-    } else {
-      // If user data is available in context, use it
       setProfile({
-        name: user?.name || '',
-        email: user?.email || '',
-        phone: user?.contact || user?.phone || '',
-        address: user?.address || '',
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        age: user.age || '',
+        gender: user.gender || '',
+        address: user.address || ''
       });
     }
-  }, [user]); // Add user as dependency
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.put('/api/users/profile', {
-        ...profile,
-        contact: profile.phone, // Add this line to ensure backward compatibility
-      });
-      setProfile({
-        ...response.data,
-        phone: response.data.phone || response.data.contact || '', // Add fallback here too
+      await updateProfile({
+        name: profile.name,
+        phone: profile.phone,
+        age: profile.age ? parseInt(profile.age) : undefined,
+        gender: profile.gender,
+        address: profile.address
       });
       setIsEditing(false);
     } catch (error) {
@@ -171,10 +154,37 @@ const UserProfile = () => {
           </div>
 
           <div style={styles.field}>
-            <label style={styles.label}>Address</label>
+            <label style={styles.label}>Age</label>
             <input
               style={styles.input}
-              type="text"
+              type="number"
+              value={profile.age}
+              onChange={(e) => setProfile({...profile, age: e.target.value})}
+              disabled={!isEditing}
+              min="0"
+              max="120"
+            />
+          </div>
+
+          <div style={styles.field}>
+            <label style={styles.label}>Gender</label>
+            <select
+              style={styles.input}
+              value={profile.gender}
+              onChange={(e) => setProfile({...profile, gender: e.target.value})}
+              disabled={!isEditing}
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div style={styles.field}>
+            <label style={styles.label}>Address</label>
+            <textarea
+              style={styles.input}
               value={profile.address}
               onChange={(e) => setProfile({...profile, address: e.target.value})}
               disabled={!isEditing}

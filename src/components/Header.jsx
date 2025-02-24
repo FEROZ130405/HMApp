@@ -124,7 +124,11 @@ const Header = () => {
               ☰
             </button>
           )}
-          <Link to="/" style={styles.logo}>
+          {/* Update logo link to conditionally redirect */}
+          <Link 
+            to={user ? "/dashboard" : "/"} 
+            style={styles.logo}
+          >
             HealthCare
           </Link>
         </div>
@@ -134,6 +138,8 @@ const Header = () => {
             <div style={styles.navLinks}>
               <Link to="/dashboard" style={styles.link}>Dashboard</Link>
               <Link to="/profile" style={styles.link}>Profile</Link>
+              <Link to="/prescriptions" style={styles.link}>Prescriptions</Link>
+              <Link to="/reports" style={styles.link}>Reports</Link>
             </div>
           )}
           {user ? (
@@ -162,6 +168,20 @@ const Header = () => {
             onClick={() => setMenuOpen(false)}
           >
             Profile
+          </Link>
+          <Link 
+            to="/prescriptions" 
+            style={styles.mobileLink}
+            onClick={() => setMenuOpen(false)}
+          >
+            Prescriptions
+          </Link>
+          <Link 
+            to="/reports" 
+            style={styles.mobileLink}
+            onClick={() => setMenuOpen(false)}
+          >
+            Reports
           </Link>
         </div>
       )}

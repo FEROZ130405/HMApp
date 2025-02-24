@@ -1,12 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Footer = () => {
+  const { user } = useAuth();
+  
   const styles = {
     footer: {
       backgroundColor: '#f8fafc',
       padding: '2rem 1rem',
       marginTop: 'auto',
+      position: 'relative',
+      borderTop: '1px solid #e2e8f0',
+      boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.05)',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: '5%',
+        right: '5%',
+        height: '1px',
+        background: '#e2e8f0',
+        borderRadius: '50%',
+      }
     },
     content: {
       maxWidth: '1200px',
@@ -38,6 +54,23 @@ const Footer = () => {
     },
   };
 
+  const quickLinks = user ? (
+    // Links for authenticated users
+    <>
+      <Link to="/dashboard" style={styles.link}>Dashboard</Link>
+      <Link to="/profile" style={styles.link}>Profile</Link>
+      <Link to="/prescriptions" style={styles.link}>Prescriptions</Link>
+      <Link to="/reports" style={styles.link}>Reports</Link>
+    </>
+  ) : (
+    // Links for non-authenticated users
+    <>
+      <Link to="/" style={styles.link}>Home</Link>
+      <Link to="/login" style={styles.link}>Login</Link>
+      <Link to="/signup" style={styles.link}>Sign Up</Link>
+    </>
+  );
+
   return (
     <footer style={styles.footer}>
       <div style={styles.content}>
@@ -47,9 +80,7 @@ const Footer = () => {
         </div>
         <div style={styles.section}>
           <h3 style={styles.title}>Quick Links</h3>
-          <Link to="/" style={styles.link}>Home</Link>
-          <Link to="/login" style={styles.link}>Login</Link>
-          <Link to="/signup" style={styles.link}>Sign Up</Link>
+          {quickLinks}
         </div>
         <div style={styles.section}>
           <h3 style={styles.title}>Legal</h3>
