@@ -1,101 +1,105 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 
 const ForgotPassword = () => {
-  const [isMobile] = useState(window.innerWidth <= 768);
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [isSent, setIsSent] = useState(false);
 
   const styles = {
     container: {
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
       justifyContent: 'center',
+      alignItems: 'center',
       minHeight: 'calc(100vh - 120px)',
-      padding: isMobile ? '1rem' : '2rem',
+      padding: '1rem',
       backgroundColor: '#f8fafc',
     },
-    formContainer: {
+    form: {
       backgroundColor: '#ffffff',
-      padding: isMobile ? '1.5rem' : '2.5rem',
-      borderRadius: '12px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      width: '100%',
+      padding: '2rem',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       maxWidth: '400px',
-      textAlign: 'center',
+      width: '100%',
     },
     title: {
-      fontSize: isMobile ? '1.75rem' : '2rem',
-      color: '#1a1a1a',
-      marginBottom: '1.5rem',
-      fontWeight: '600',
-    },
-    subtitle: {
-      color: '#64748b',
-      fontSize: '0.875rem',
-      marginBottom: '1.5rem',
-    },
-    inputGroup: {
-      position: 'relative',
+      fontSize: '1.5rem',
       marginBottom: '1rem',
+      color: '#1a1a1a',
     },
     input: {
       width: '100%',
       padding: '0.75rem',
       marginBottom: '1rem',
-      borderRadius: '8px',
+      borderRadius: '4px',
       border: '1px solid #e2e8f0',
-      fontSize: '1rem',
-      backgroundColor: '#f8fafc',
-      transition: 'all 0.3s ease',
-      outline: 'none',
-      boxSizing: 'border-box',
-      color: '#000000',
     },
     button: {
       width: '100%',
       padding: '0.75rem',
-      marginTop: '1rem',
-      borderRadius: '8px',
-      border: 'none',
       backgroundColor: '#4a90e2',
       color: 'white',
-      fontSize: '1rem',
-      fontWeight: '500',
+      border: 'none',
+      borderRadius: '4px',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
     },
-    backToLogin: {
-      marginTop: '1.5rem',
-      color: '#64748b',
-      fontSize: '0.875rem',
+    message: {
+      color: '#10b981',
+      marginTop: '1rem',
     },
-    backToLoginLink: {
+    error: {
+      color: '#ef4444',
+      marginTop: '1rem',
+    },
+    link: {
       color: '#4a90e2',
       textDecoration: 'none',
-      fontWeight: '500',
-      marginLeft: '0.25rem',
+      display: 'block',
+      marginTop: '1rem',
     },
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/api/auth/forgot-password', { email });
+      setIsSent(true);
+      setMessage('Password reset instructions have been sent to your email.');
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send reset instructions');
+      setMessage('');
+    }
   };
 
   return (
     <div style={styles.container}>
-      <div style={styles.formContainer}>
+      <div style={styles.form}>
         <h2 style={styles.title}>Reset Password</h2>
-        <p style={styles.subtitle}>Enter your email address to receive password reset instructions.</p>
-        <div style={styles.inputGroup}>
-          <input
-            type="email"
-            placeholder="Email address"
-            style={styles.input}
-          />
-        </div>
-        <button style={styles.button}>Send Reset Link</button>
-        <p style={styles.backToLogin}>
-          Remember your password?
-          <Link to="/login" style={styles.backToLoginLink}>
-            Back to Login
-          </Link>
-        </p>
+        {!isSent ? (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              style={styles.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <button type="submit" style={styles.button}>
+              Send Reset Instructions
+            </button>
+          </form>
+        ) : (
+          <p style={styles.message}>{message}</p>
+        )}
+        {error && <p style={styles.error}>{error}</p>}
+        <Link to="/login" style={styles.link}>
+          Back to Login
+        </Link>
       </div>
     </div>
   );

@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api'; // Fix import path
 
 const Login = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
     const handleResize = () => {
@@ -117,9 +124,21 @@ const Login = () => {
     },
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your login logic here
+    setError('');
+    try {
+      // Only use the login function from AuthContext, remove direct API call
+      const userData = await login({ email, password });
+      console.log('Login successful:', userData);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(
+        err.response?.data?.message || 
+        'Failed to login. Please check your credentials.'
+      );
+    }
   };
 
   const handleFocus = (e) => {
@@ -137,11 +156,15 @@ const Login = () => {
       <form style={styles.formContainer} onSubmit={handleSubmit}>
         <h1 style={styles.title}>Welcome Back</h1>
         
+        {error && <div style={styles.errorMessage}>{error}</div>}
+
         <div style={styles.inputGroup}>
           <input
             type="email"
             placeholder="Email address"
             style={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
             required
@@ -153,6 +176,8 @@ const Login = () => {
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             style={styles.input}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
             required

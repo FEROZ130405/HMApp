@@ -1,231 +1,221 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import Loading from '../components/Loading';
 
 const Signup = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
+    age: '',
+    gender: '',
+    contact: '',
+    address: ''
   });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isMobile] = useState(window.innerWidth <= 768);
+  const navigate = useNavigate();
 
   const styles = {
     container: {
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
       justifyContent: 'center',
+      alignItems: 'center',
       minHeight: 'calc(100vh - 120px)',
       padding: isMobile ? '1rem' : '2rem',
       backgroundColor: '#f8fafc',
     },
-    formContainer: {
+    form: {
       backgroundColor: '#ffffff',
-      padding: isMobile ? '1.5rem' : '2.5rem',
-      borderRadius: '12px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      padding: isMobile ? '1.5rem' : '2rem',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       width: '100%',
       maxWidth: '400px',
-      textAlign: 'center',
     },
-    title: {
-      fontSize: isMobile ? '1.75rem' : '2rem',
-      color: '#1a1a1a',
-      marginBottom: '1.5rem',
-      fontWeight: '600',
-    },
-    subtitle: {
-      color: '#64748b',
-      fontSize: '0.875rem',
-      marginTop: '-1rem',
-      marginBottom: '1.5rem',
-    },
-    inputGroup: {
-      position: 'relative',
+    formGroup: {
       marginBottom: '1rem',
+    },
+    label: {
+      display: 'block',
+      marginBottom: '0.5rem',
+      color: '#4a5568',
+      fontSize: isMobile ? '0.9rem' : '1rem',
     },
     input: {
       width: '100%',
       padding: '0.75rem',
-      paddingRight: '3.5rem', // Add space for the show/hide button
-      marginBottom: '1rem',
-      borderRadius: '8px',
+      borderRadius: '4px',
       border: '1px solid #e2e8f0',
-      fontSize: '1rem',
-      backgroundColor: '#f8fafc',
-      transition: 'all 0.3s ease',
-      outline: 'none',
-      boxSizing: 'border-box',
-      color: '#000000',
-    },
-    inputFocus: {
-      border: '1px solid #4a90e2',
-      boxShadow: '0 0 0 3px rgba(74, 144, 226, 0.1)',
+      fontSize: isMobile ? '0.9rem' : '1rem',
     },
     button: {
       width: '100%',
       padding: '0.75rem',
-      marginTop: '1rem',
-      borderRadius: '8px',
-      border: 'none',
       backgroundColor: '#4a90e2',
       color: 'white',
-      fontSize: '1rem',
-      fontWeight: '500',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      ':hover': {
-        backgroundColor: '#357abd',
-      },
-    },
-    loginLink: {
-      marginTop: '1.5rem',
-      color: '#64748b',
-      fontSize: '0.875rem',
-    },
-    loginLinkAnchor: {
-      color: '#4a90e2',
-      textDecoration: 'none',
-      fontWeight: '500',
-      marginLeft: '0.25rem',
-      transition: 'color 0.3s ease',
-    },
-    showPasswordButton: {
-      position: 'absolute',
-      right: '10px',
-      top: '0.52rem', // Adjusted from 0.75rem to 0.65rem
-      background: 'none',
       border: 'none',
-      color: '#64748b',
+      borderRadius: '4px',
       cursor: 'pointer',
-      padding: '0.25rem',
-      fontSize: '0.875rem',
-      transform: 'none', // Remove transform
+      fontSize: isMobile ? '0.9rem' : '1rem',
+      marginTop: '1rem',
     },
-    errorMessage: {
+    error: {
       color: '#ef4444',
       fontSize: '0.875rem',
       marginTop: '0.5rem',
-      textAlign: 'left',
     },
-    terms: {
-      fontSize: '0.75rem',
-      color: '#64748b',
-      marginTop: '1rem',
+    loginLink: {
       textAlign: 'center',
-    },
-    termsLink: {
-      color: '#4a90e2',
-      textDecoration: 'none',
-    },
+      marginTop: '1rem',
+      fontSize: isMobile ? '0.9rem' : '1rem',
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your signup logic here
-    console.log(formData);
+    setError('');
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await api.post('/api/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        age: parseInt(formData.age),
+        gender: formData.gender,
+        contact: formData.contact,
+        address: formData.address
+      });
+
+      if (response.data) {
+        navigate('/login');
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError(
+        err.response?.data?.message || 
+        'Registration failed. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleFocus = (e) => {
-    e.target.style.border = styles.inputFocus.border;
-    e.target.style.boxShadow = styles.inputFocus.boxShadow;
-  };
-
-  const handleBlur = (e) => {
-    e.target.style.border = styles.input.border;
-    e.target.style.boxShadow = 'none';
-  };
+  if (loading) return <Loading />;
 
   return (
     <div style={styles.container}>
-      <form style={styles.formContainer} onSubmit={handleSubmit}>
-        <h1 style={styles.title}>Create Account</h1>
-        <p style={styles.subtitle}>Join us to access all our features</p>
+      <div style={styles.form}>
+        <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Create Account</h2>
+        {error && <div style={styles.error}>{error}</div>}
+        <form onSubmit={handleSubmit}>
+          {/* Form groups */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Full Name</label>
+            <input
+              type="text"
+              style={styles.input}
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              required
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Email</label>
+            <input
+              type="email"
+              style={styles.input}
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              required
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Password</label>
+            <input
+              type="password"
+              style={styles.input}
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              required
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Confirm Password</label>
+            <input
+              type="password"
+              style={styles.input}
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              required
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Age</label>
+            <input
+              type="number"
+              style={styles.input}
+              value={formData.age}
+              onChange={(e) => setFormData({...formData, age: e.target.value})}
+              required
+            />
+          </div>
 
-        <div style={styles.inputGroup}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Full name"
-            style={styles.input}
-            value={formData.name}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            required
-          />
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Gender</label>
+            <select
+              style={styles.input}
+              value={formData.gender}
+              onChange={(e) => setFormData({...formData, gender: e.target.value})}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Contact Number</label>
+            <input
+              type="tel"
+              style={styles.input}
+              value={formData.contact}
+              onChange={(e) => setFormData({...formData, contact: e.target.value})}
+              required
+            />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Address</label>
+            <textarea
+              style={styles.input}
+              value={formData.address}
+              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              required
+            />
+          </div>
+          <button type="submit" style={styles.button}>Sign Up</button>
+        </form>
+        <div style={styles.loginLink}>
+          Already have an account? <Link to="/login">Login</Link>
         </div>
-
-        <div style={styles.inputGroup}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email address"
-            style={styles.input}
-            value={formData.email}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            required
-          />
-        </div>
-
-        <div style={styles.inputGroup}>
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Password"
-            style={styles.input}
-            value={formData.password}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            required
-          />
-          <button
-            type="button"
-            style={styles.showPasswordButton}
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
-
-        <button type="submit" style={styles.button}>
-          Create Account
-        </button>
-
-        <p style={styles.terms}>
-          By signing up, you agree to our{' '}
-          <Link to="/terms" style={styles.termsLink}>Terms of Service</Link>
-          {' '}and{' '}
-          <Link to="/privacy" style={styles.termsLink}>Privacy Policy</Link>
-        </p>
-
-        <p style={styles.loginLink}>
-          Already have an account?
-          <Link to="/login" style={styles.loginLinkAnchor}>
-            Sign in
-          </Link>
-        </p>
-      </form>
+      </div>
     </div>
   );
 };
